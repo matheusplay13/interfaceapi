@@ -27,23 +27,65 @@ async function testarConexaoAPI() {
     console.log('Teste de conexão - Dados:', data);
     
     resultadoDiv.innerHTML = `
-      <div class="cliente-card">
+      <div class="cliente-card" style="border-left: 4px solid #27ae60;">
         <h3>✅ Teste de Conexão Bem-Sucedido!</h3>
         <p><strong>Status:</strong> ${response.status}</p>
         <p><strong>Clientes encontrados:</strong> ${data.length}</p>
         <p><strong>API respondendo:</strong> Sim</p>
-        <details style="margin-top: 10px;">
-          <summary>Ver dados brutos</summary>
-          <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto;">
+        <p><strong>Servidor:</strong> localhost:3000</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="buscarTodosClientes()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            👥 Ver Todos os Clientes
+          </button>
+          <button onclick="irParaCadastro()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            ➕ Cadastrar Novo Cliente
+          </button>
+        </div>
+        <details style="margin-top: 1rem;">
+          <summary style="cursor: pointer; font-weight: 600; color: #667eea; padding: 0.5rem; border-radius: 8px; transition: background 0.3s ease;">
+            📊 Ver dados brutos da resposta
+          </summary>
+          <pre style="background: #f8f9fa; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; border: 1px solid #e1e8ed; margin-top: 0.5rem;">
 ${JSON.stringify(data, null, 2)}
           </pre>
         </details>
+        <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+          💡 Ótimo! A API está funcionando perfeitamente. Você pode usar todas as funcionalidades do sistema.
+        </p>
       </div>
     `;
     
   } catch (error) {
     console.error('Teste de conexão falhou:', error);
-    mostrarErro(`❌ Falha no teste de conexão: ${error.message}`);
+    
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+        <h3>❌ API Offline - Falha na Conexão</h3>
+        <p><strong>Erro:</strong> Não foi possível conectar à API.</p>
+        <p><strong>Motivo:</strong> A API não está respondendo em localhost:3000</p>
+        <p><strong>Solução:</strong> Verifique se o servidor está rodando corretamente</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="testarConexaoAPI()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            🔄 Testar Novamente
+          </button>
+          <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            🔄 Recarregar Página
+          </button>
+        </div>
+        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid #f39c12;">
+          <h4 style="color: #f39c12; margin: 0 0 0.5rem 0;">🔧 Passos para resolver:</h4>
+          <ol style="margin: 0; padding-left: 1.5rem; color: #2c3e50;">
+            <li>Verifique se o servidor Node.js está rodando</li>
+            <li>Confirme se a porta 3000 está disponível</li>
+            <li>Verifique se não há erros no console do servidor</li>
+            <li>Tente reiniciar o servidor da API</li>
+          </ol>
+        </div>
+        <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+          💡 Enquanto a API estiver offline, as funcionalidades de busca e cadastro não funcionarão.
+        </p>
+      </div>
+    `;
   }
 }
 
@@ -126,11 +168,47 @@ async function buscarTodosClientes() {
     console.error('Mensagem do erro:', error.message);
     
     if (error.name === 'TypeError' && (error.message.includes('fetch') || error.message.includes('Network'))) {
-      mostrarErro('❌ API não está online. Verifique se o servidor está rodando em localhost:3000');
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3>❌ API Offline - Acesso Bloqueado</h3>
+          <p><strong>Erro:</strong> Não foi possível buscar todos os clientes.</p>
+          <p><strong>Motivo:</strong> A API não está online no momento.</p>
+          <p><strong>Solução:</strong> Verifique se o servidor está rodando em localhost:3000</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="testarConexaoAPI()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              🔄 Testar Conexão Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              🔄 Recarregar Página
+            </button>
+          </div>
+          <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+            💡 Enquanto a API estiver offline, não é possível buscar clientes.
+          </p>
+        </div>
+      `;
     } else if (error.name === 'SyntaxError') {
       mostrarErro('❌ Erro ao processar resposta da API. Verifique o formato dos dados.');
     } else {
-      mostrarErro(`❌ Erro ao buscar clientes: ${error.message}`);
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3>❌ Erro ao Buscar Clientes</h3>
+          <p><strong>Erro:</strong> ${error.message}</p>
+          <p><strong>Motivo:</strong> Ocorreu um erro inesperado ao buscar clientes.</p>
+          <p><strong>Solução:</strong> Tente novamente mais tarde ou verifique se o servidor está rodando corretamente.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="buscarTodosClientes()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              🔄 Tentar Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              🔄 Recarregar Página
+            </button>
+          </div>
+          <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+            💡 Se o erro persistir, verifique se o servidor está rodando corretamente.
+          </p>
+        </div>
+      `;
     }
   }
 }
@@ -141,7 +219,25 @@ async function buscarClientePorCpf() {
   const cpf = cpfInput.value.replace(/\D/g, '');
   
   if (!cpf || cpf.length !== 11) {
-    mostrarErro('❌ CPF inválido. Digite 11 números.');
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+        <h3>❌ CPF Inválido</h3>
+        <p><strong>Erro:</strong> O CPF digitado não é válido.</p>
+        <p><strong>Motivo:</strong> O CPF deve conter exatamente 11 números.</p>
+        <p><strong>Solução:</strong> Digite um CPF no formato XXX.XXX.XXX-XX</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="document.getElementById('cpf').focus()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            ✏️ Corrigir CPF
+          </button>
+          <button onclick="document.getElementById('cpf').value=''; resultadoDiv.innerHTML='';" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              🔄 Limpar Campo
+            </button>
+        </div>
+        <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+          💡 Exemplo válido: 123.456.789-00
+        </p>
+      </div>
+    `;
     return;
   }
   
@@ -152,7 +248,25 @@ async function buscarClientePorCpf() {
     const response = await fetch(`${API_BASE_URL}/clientes/${cpf}`);
     
     if (response.status === 404) {
-      resultadoDiv.innerHTML = '<p>Cliente não encontrado com este CPF.</p>';
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+          <h3>🔍 Cliente Não Encontrado</h3>
+          <p><strong>CPF pesquisado:</strong> ${formatarCPF(cpf)}</p>
+          <p><strong>Motivo:</strong> Não há cliente cadastrado com este CPF.</p>
+          <p><strong>Solução:</strong> Verifique o CPF digitado ou cadastre este cliente.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="irParaCadastro()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              ➕ Cadastrar Este Cliente
+            </button>
+            <button onclick="document.getElementById('cpf').focus()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              ✏️ Buscar Outro CPF
+            </button>
+          </div>
+          <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+            💡 Dica: Use o botão "Cadastrar Novo Cliente" para adicionar clientes novos.
+          </p>
+        </div>
+      `;
       return;
     }
     
@@ -167,9 +281,45 @@ async function buscarClientePorCpf() {
     console.error('Erro ao buscar cliente por CPF:', error);
     
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      mostrarErro('❌ API não está online. Verifique se o servidor está rodando em localhost:3000');
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3>❌ API Offline - Acesso Bloqueado</h3>
+          <p><strong>Erro:</strong> Não foi possível buscar o cliente por CPF.</p>
+          <p><strong>Motivo:</strong> A API não está online no momento.</p>
+          <p><strong>Solução:</strong> Verifique se o servidor está rodando em localhost:3000</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="testarConexaoAPI()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              🔄 Testar Conexão Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              🔄 Recarregar Página
+            </button>
+          </div>
+          <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+            💡 Enquanto a API estiver offline, não é possível buscar clientes por CPF.
+          </p>
+        </div>
+      `;
     } else {
-      mostrarErro('❌ Erro ao buscar cliente. Tente novamente mais tarde.');
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3>❌ Erro ao Buscar Cliente</h3>
+          <p><strong>Erro:</strong> ${error.message}</p>
+          <p><strong>Motivo:</strong> Ocorreu um erro inesperado ao buscar o cliente.</p>
+          <p><strong>Solução:</strong> Tente novamente mais tarde ou verifique se o servidor está rodando corretamente.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="buscarClientePorCpf()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              🔄 Tentar Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              🔄 Recarregar Página
+            </button>
+          </div>
+          <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+            💡 Se o erro persistir, verifique se o servidor está rodando corretamente.
+          </p>
+        </div>
+      `;
     }
   }
 }
@@ -185,3 +335,49 @@ document.getElementById('cpf').addEventListener('input', function(e) {
   
   e.target.value = value;
 });
+
+// Função para navegar para página de cadastro
+async function irParaCadastro() {
+  try {
+    // Primeiro, testa se a API está online
+    const response = await fetch(`${API_BASE_URL}/clientes`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      mode: 'cors'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    // Se a API está respondendo, permite navegar para o cadastro
+    window.location.href = 'cadastro.html';
+    
+  } catch (error) {
+    console.error('API está offline:', error);
+    
+    // Mostra erro impedindo o acesso ao cadastro
+    const resultadoDiv = document.getElementById('resultado');
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+        <h3>❌ API Offline - Acesso Bloqueado</h3>
+        <p><strong>Erro:</strong> Não foi possível acessar a página de cadastro.</p>
+        <p><strong>Motivo:</strong> A API não está online no momento.</p>
+        <p><strong>Solução:</strong> Verifique se o servidor está rodando em localhost:3000</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="testarConexaoAPI()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            🔄 Testar Conexão Novamente
+          </button>
+          <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            🔄 Recarregar Página
+          </button>
+        </div>
+        <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+          💡 Enquanto a API estiver offline, não é possível cadastrar novos clientes.
+        </p>
+      </div>
+    `;
+  }
+}
