@@ -1,5 +1,54 @@
 const API_BASE_URL = 'http://localhost:3000';
 
+// Função para verificar se usuário está logado
+function verificarUsuarioLogado() {
+  const usuarioLogado = localStorage.getItem('usuarioLogado');
+  
+  if (!usuarioLogado) {
+    // Se não está logado, redireciona para login
+    window.location.href = 'login.html';
+    return null;
+  }
+  
+  try {
+    const usuario = JSON.parse(usuarioLogado);
+    return usuario;
+  } catch (error) {
+    console.error('Erro ao parsear dados do usuário:', error);
+    localStorage.removeItem('usuarioLogado');
+    window.location.href = 'login.html';
+    return null;
+  }
+}
+
+// Função para exibir informações do usuário
+function exibirUserInfo() {
+  const usuario = verificarUsuarioLogado();
+  if (usuario) {
+    const userNameElement = document.getElementById('user-name');
+    if (userNameElement) {
+      userNameElement.textContent = `Olá, ${usuario.nome}`;
+    }
+  }
+}
+
+// Função para fazer logout
+function fazerLogout() {
+  // Confirmação do usuário
+  if (confirm('Tem certeza que deseja sair do sistema?')) {
+    // Remove dados do usuário do localStorage
+    localStorage.removeItem('usuarioLogado');
+    
+    // Redireciona para a página de login
+    window.location.href = 'login.html';
+  }
+}
+
+// Verifica autenticação quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+  exibirUserInfo();
+});
+
 // Função para testar a API
 async function testarConexaoAPI() {
   const resultadoDiv = document.getElementById('resultado');

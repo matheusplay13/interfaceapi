@@ -91,12 +91,64 @@ header {
   animation: slideDown 0.8s ease-out;
 }
 
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 header h1 {
   font-size: 3.5rem;
   font-weight: 800;
   color: var(--primary);
   margin-bottom: 0.5rem;
   letter-spacing: -1px;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--surface-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(10px);
+}
+
+.btn-logout {
+  background: var(--gradient-2);
+  color: var(--background);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn-logout:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.logout-icon {
+  font-size: 1rem;
 }
 
 /* Main Container */
@@ -921,8 +973,20 @@ pre {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .user-menu {
+    width: 100%;
+    justify-content: center;
+  }
+
   header h1 {
     font-size: 2rem;
+    margin-bottom: 0;
   }
 
   .botoes-principais {
@@ -947,6 +1011,239 @@ pre {
   .modal-content {
     width: 95%;
     margin: 1rem;
+  }
+}
+
+/* Responsive Login */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-card {
+    padding: 2rem;
+    margin: 1rem;
+  }
+  
+  .login-header h1 {
+    font-size: 2rem;
+  }
+  
+  .login-options {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+
+/* User Registration Page Styles */
+.cadastro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: var(--gradient-2);
+}
+
+.cadastro-card {
+  background: var(--surface-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 8px 32px var(--shadow-dark);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.8s ease-out;
+}
+
+.cadastro-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--glow) 0%, transparent 50%);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.cadastro-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.cadastro-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  letter-spacing: -1px;
+}
+
+.cadastro-header p {
+  color: var(--text-light);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--shadow);
+  transform: translateY(-1px);
+  background: var(--surface-light);
+}
+
+.form-group input::placeholder,
+.form-group select::placeholder {
+  color: var(--text-dim);
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.password-strength {
+  margin-top: 0.5rem;
+}
+
+.strength-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  width: 0%;
+  transition: all 0.3s ease;
+  margin-bottom: 0.25rem;
+}
+
+.strength-text {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.terms-section {
+  margin: 2rem 0;
+}
+
+.terms-section .checkbox-container {
+  margin-bottom: 0;
+}
+
+.terms-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.terms-link:hover {
+  color: var(--primary-light);
+  text-decoration: underline;
+}
+
+.btn-cadastrar {
+  background: var(--gradient-1);
+  color: var(--background);
+  border: 1px solid var(--border);
+  padding: 1rem 2rem;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn-cadastrar:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-cadastrar:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sucesso {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid var(--success);
+  color: var(--success);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Responsive Registration */
+@media (max-width: 768px) {
+  .cadastro-container {
+    padding: 1rem;
+  }
+  
+  .cadastro-card {
+    padding: 2rem;
+    margin: 1rem;
+    max-width: 100%;
+  }
+  
+  .cadastro-header h1 {
+    font-size: 2rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .btn-cancelar,
+  .btn-cadastrar {
+    width: 100%;
   }
 }
 
