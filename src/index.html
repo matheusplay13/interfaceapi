@@ -11,13 +11,23 @@
 <body>
 
   <header>
-    <h1>Sistema de Busca de Clientes</h1>
+    <div class="header-content">
+      <h1>Sistema de Busca de Clientes</h1>
+      <div class="user-menu">
+        <div class="user-info">
+          <span id="user-name">Carregando...</span>
+        </div>
+        <button id="btn-logout" class="btn-logout" onclick="fazerLogout()">
+          <span class="logout-icon">Sair</span>
+        </button>
+      </div>
+    </div>
   </header>
 
   <main>
     <div class="botoes-principais">
       <button id="btn-todos" onclick="buscarTodosClientes()">Buscar Todos os Clientes</button>
-      <button id="btn-cadastrar" onclick="irParaCadastro()" style="background: #27ae60;">Cadastrar Novo Cliente</button>
+      <button id="btn-cadastrar" onclick="window.location.href='cadastro-usuario.html'" style="background: #27ae60;">Cadastrar Novo Usuário</button>
       <button id="btn-testar" onclick="testarConexaoAPI()" style="background: #f39c12;">Testar Conexão</button>
     </div>
     

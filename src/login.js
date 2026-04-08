@@ -1,40 +1,26 @@
-// Função para formatar CPF
-function formatarCPF(cpf) {
-  cpf = cpf.replace(/\D/g, '');
-  cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
-  cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
-  cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-  return cpf;
+// Função para formatar código
+function formatarCodigo(codigo) {
+  // Remove não-dígitos
+  codigo = codigo.replace(/\D/g, '');
+  
+  // Limita a 10 dígitos
+  if (codigo.length > 10) {
+    codigo = codigo.substring(0, 10);
+  }
+  
+  return codigo;
 }
 
-// Função para validar CPF
-function validarCPF(cpf) {
-  cpf = cpf.replace(/\D/g, '');
+// Função para validar código
+function validarCodigo(codigo) {
+  // Remove formatação
+  codigo = codigo.replace(/\D/g, '');
   
-  if (cpf.length !== 11) return false;
+  // Verifica se tem pelo menos 3 dígitos
+  if (codigo.length < 3) return false;
   
-  // Verifica se todos os dígitos são iguais
-  if (/^(\d)\1{10}$/.test(cpf)) return false;
-  
-  let soma = 0;
-  let resto;
-  
-  // Validação do primeiro dígito
-  for (let i = 1; i <= 9; i++) {
-    soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
-  }
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpf.substring(9, 10))) return false;
-  
-  // Validação do segundo dígito
-  soma = 0;
-  for (let i = 1; i <= 10; i++) {
-    soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
-  }
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpf.substring(10, 11))) return false;
+  // Verifica se não são todos iguais
+  if (/^(\d)\1+$/.test(codigo)) return false;
   
   return true;
 }
@@ -43,26 +29,26 @@ function validarCPF(cpf) {
 async function fazerLogin(event) {
   event.preventDefault();
   
-  const cpfInput = document.getElementById('cpf-login');
+  const codigoInput = document.getElementById('cpf-login');
   const senhaInput = document.getElementById('senha-login');
   const erroDiv = document.getElementById('erro-login');
   const loginButton = document.querySelector('.btn-login');
   
-  const cpf = cpfInput.value.trim();
+  const codigo = codigoInput.value.trim();
   const senha = senhaInput.value.trim();
   
   // Limpa mensagens de erro anteriores
   erroDiv.classList.add('hidden');
   erroDiv.textContent = '';
   
-  // Validação do CPF
-  if (!cpf) {
-    mostrarErro('Por favor, digite seu CPF.');
+  // Validação do código
+  if (!codigo) {
+    mostrarErro('Por favor, digite seu código.');
     return;
   }
   
-  if (!validarCPF(cpf)) {
-    mostrarErro('CPF inválido. Verifique os dígitos informados.');
+  if (!validarCodigo(codigo)) {
+    mostrarErro('Código inválido. Use pelo menos 3 números.');
     return;
   }
   
@@ -84,7 +70,7 @@ async function fazerLogin(event) {
   
   try {
     // Simulação de autenticação (substitua por sua API real)
-    await autenticarUsuario(cpf, senha);
+    await autenticarUsuario(codigo, senha);
     
     // Login bem-sucedido - redireciona para a página principal
     window.location.href = 'index.html';
@@ -99,35 +85,100 @@ async function fazerLogin(event) {
   }
 }
 
-// Função de autenticação (simulação)
-async function autenticarUsuario(cpf, senha) {
-  // Simula delay de rede
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  // Dados de teste (substitua por chamada à API real)
-  const usuariosTeste = [
-    { cpf: '12345678909', senha: 'admin123' },
-    { cpf: '98765432100', senha: 'user123' },
-    { cpf: '11122233344', senha: 'test123' }
-  ];
-  
-  // Remove formatação do CPF para comparação
-  const cpfLimpo = cpf.replace(/\D/g, '');
-  
-  // Verifica se o usuário existe
-  const usuario = usuariosTeste.find(u => u.cpf === cpfLimpo && u.senha === senha);
-  
-  if (!usuario) {
-    throw new Error('CPF ou senha incorretos. Tente novamente.');
+// Configuração da API
+const API_CONFIG = {
+  baseURL: 'http://localhost:3000',
+  endpoints: {
+    usuarios: '/usuarios'
   }
+};
+
+// Função de autenticação via API
+async function autenticarUsuario(codigo, senha) {
+  console.log('=== INICIANDO AUTENTICAÇÃO ===');
+  console.log('Código original:', codigo);
+  console.log('Senha original:', senha);
   
-  // Salva dados do usuário no localStorage
-  localStorage.setItem('usuarioLogado', JSON.stringify({
-    cpf: cpfLimpo,
-    dataLogin: new Date().toISOString()
-  }));
+  // Remove formatação do código
+  const codigoLimpo = codigo.replace(/\D/g, '');
+  console.log('Código limpo:', codigoLimpo);
   
-  return usuario;
+  try {
+    console.log('Tentando buscar usuários da API:', `${API_CONFIG.baseURL}${API_CONFIG.endpoints.usuarios}`);
+    
+    // Busca todos os usuários da API
+    const response = await fetch(`${API_CONFIG.baseURL}${API_CONFIG.endpoints.usuarios}`);
+    
+    console.log('Status da resposta:', response.status);
+    
+    if (!response.ok) {
+      console.error('Erro ao buscar usuários da API');
+      throw new Error('Erro ao conectar com a API de usuários.');
+    }
+    
+    const usuarios = await response.json();
+    console.log('Usuários encontrados na API:', usuarios);
+    
+    // Procura usuário com código e senha correspondentes
+    const usuario = usuarios.find(u => 
+      u.codigo === codigoLimpo && u.senha === senha
+    );
+    
+    console.log('Usuário encontrado:', usuario);
+    
+    if (!usuario) {
+      console.error('Nenhum usuário encontrado com código:', codigoLimpo, 'e senha:', senha);
+      throw new Error('Código ou senha incorretos. Tente novamente.');
+    }
+    
+    // Salva dados do usuário no localStorage
+    localStorage.setItem('usuarioLogado', JSON.stringify({
+      id: usuario.id || Date.now(),
+      nome: usuario.nome,
+      codigo: codigoLimpo,
+      email: usuario.email,
+      dataLogin: new Date().toISOString()
+    }));
+    
+    console.log('Login realizado com sucesso via API');
+    return usuario;
+    
+  } catch (error) {
+    console.error('ERRO NA AUTENTICAÇÃO:', error);
+    console.log('=== USANDO FALLBACK ===');
+    
+    // Se a API falhar, tenta usar dados de teste como fallback
+    console.warn('API indisponível, usando dados de teste:', error);
+    
+    // Dados de teste (fallback)
+    const usuariosTeste = [
+      { id: 1, nome: 'Administrador', codigo: '123', senha: 'admin123', email: 'admin@teste.com' },
+      { id: 2, nome: 'Usuário Teste', codigo: '456', senha: 'user123', email: 'user@teste.com' },
+      { id: 3, nome: 'Demo User', codigo: '789', senha: 'test123', email: 'demo@teste.com' }
+    ];
+    
+    console.log('Usuários de teste disponíveis:', usuariosTeste.map(u => ({ codigo: u.codigo, senha: u.senha })));
+    
+    const usuario = usuariosTeste.find(u => u.codigo === codigoLimpo && u.senha === senha);
+    console.log('Usuário encontrado no fallback:', usuario);
+    
+    if (!usuario) {
+      console.error('Nenhum usuário encontrado com código:', codigoLimpo, 'e senha:', senha);
+      throw new Error('Código ou senha incorretos. Tente novamente.');
+    }
+    
+    // Salva dados do usuário no localStorage
+    localStorage.setItem('usuarioLogado', JSON.stringify({
+      id: usuario.id,
+      nome: usuario.nome,
+      codigo: codigoLimpo,
+      email: usuario.email,
+      dataLogin: new Date().toISOString()
+    }));
+    
+    console.log('Fallback executado com sucesso');
+    return usuario;
+  }
 }
 
 // Função para mostrar erros
@@ -142,18 +193,18 @@ function mostrarErro(mensagem) {
   }, 5000);
 }
 
-// Formatação automática do CPF
+// Formatação automática do código
 document.addEventListener('DOMContentLoaded', function() {
-  const cpfInput = document.getElementById('cpf-login');
+  const codigoInput = document.getElementById('cpf-login');
   
-  if (cpfInput) {
-    cpfInput.addEventListener('input', function(e) {
+  if (codigoInput) {
+    codigoInput.addEventListener('input', function(e) {
       let valor = e.target.value;
-      valor = formatarCPF(valor);
+      valor = formatarCodigo(valor);
       e.target.value = valor;
     });
     
-    cpfInput.addEventListener('keypress', function(e) {
+    codigoInput.addEventListener('keypress', function(e) {
       // Permite apenas números
       const char = String.fromCharCode(e.which);
       if (!/[0-9]/.test(char)) {
@@ -182,14 +233,3 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Função para "Cadastre-se"
-document.addEventListener('DOMContentLoaded', function() {
-  const cadastreSeLink = document.querySelector('.login-footer a');
-  
-  if (cadastreSeLink) {
-    cadastreSeLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      alert('Funcionalidade de cadastro em desenvolvimento. Entre em contato com o administrador.');
-    });
-  }
-});
