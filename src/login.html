@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Sistema de Clientes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Login</h1>
+        <p>Acesse o sistema de gerenciamento de clientes</p>
+      </div>
+      
+      <form id="login-form" onsubmit="fazerLogin(event)">
+        <div class="form-group">
+          <label for="cpf-login">CPF</label>
+          <input type="text" id="cpf-login" maxlength="14" placeholder="Ex: 123.456.789-00" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="senha-login">Senha</label>
+          <input type="password" id="senha-login" placeholder="Digite sua senha" required>
+        </div>
+        
+        <div class="login-options">
+          <label class="checkbox-container">
+            <input type="checkbox" id="lembrar-me">
+            <span class="checkmark"></span>
+            Lembrar-me
+          </label>
+          <a href="#" class="forgot-password">Esqueci minha senha</a>
+        </div>
+        
+        <button type="submit" class="btn-login">Entrar</button>
+        
+        <div class="login-footer">
+          <p>Não tem uma conta? <a href="#">Cadastre-se</a></p>
+        </div>
+      </form>
+      
+      <div id="erro-login" class="erro hidden"></div>
+    </div>
+  </div>
+  
+  <script src="login.js"></script>
+</body>
+</html>
