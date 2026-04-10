@@ -1215,6 +1215,19 @@ pre {
   animation: fadeIn 0.5s ease-in-out;
 }
 
+.error-text {
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.error-text:not(.hidden) {
+  opacity: 1;
+}
+
 /* Responsive Registration */
 @media (max-width: 768px) {
   .cadastro-container {

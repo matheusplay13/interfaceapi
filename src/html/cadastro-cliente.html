@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Cliente - Sistema</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="cadastro-container">
+    <div class="cadastro-card">
+      <div class="cadastro-header">
+        <h1>Cadastro de Cliente</h1>
+        <p>Adicione um novo cliente ao sistema</p>
+      </div>
+      
+      <form id="cadastro-cliente-form" onsubmit="cadastrarCliente(event)">
+        <div class="form-group">
+          <label for="cpf">CPF *</label>
+          <input type="text" id="cpf" maxlength="14" placeholder="Ex: 123.456.789-00" required>
+          <small id="cpf-error" class="error-text hidden">CPF inválido ou já cadastrado</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="nome">Nome Completo *</label>
+          <input type="text" id="nome" placeholder="Digite o nome completo do cliente" required>
+          <small id="nome-error" class="error-text hidden">Nome é obrigatório</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="idade">Idade *</label>
+          <input type="number" id="idade" min="1" max="120" placeholder="Ex: 25" required>
+          <small id="idade-error" class="error-text hidden">Idade deve ser entre 1 e 120 anos</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="endereco">Endereço *</label>
+          <input type="text" id="endereco" placeholder="Rua, número, complemento" required>
+          <small id="endereco-error" class="error-text hidden">Endereço é obrigatório</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="bairro">Bairro *</label>
+          <input type="text" id="bairro" placeholder="Nome do bairro" required>
+          <small id="bairro-error" class="error-text hidden">Bairro é obrigatório</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="contato">Contato *</label>
+          <input type="text" id="contato" placeholder="Telefone ou e-mail" required>
+          <small id="contato-error" class="error-text hidden">Contato é obrigatório</small>
+        </div>
+        
+        <div class="form-buttons">
+          <button type="button" class="btn-cancelar" onclick="voltarParaDashboard()">Voltar</button>
+          <button type="submit" class="btn-cadastrar" id="btn-salvar">Cadastrar Cliente</button>
+        </div>
+      </form>
+      
+      <div id="erro-cadastro" class="erro hidden"></div>
+      <div id="sucesso-cadastro" class="sucesso hidden"></div>
+    </div>
+  </div>
+  
+  <script src="../js/cadastro-cliente.js"></script>
+</body>
+</html>
