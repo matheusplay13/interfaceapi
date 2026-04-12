@@ -166,8 +166,7 @@ async function cadastrarUsuario(event) {
     codigo: document.getElementById('cpf-cadastro').value.trim(),
     email: document.getElementById('email').value.trim(),
     senha: document.getElementById('senha-cadastro').value,
-    confirmarSenha: document.getElementById('confirmar-senha').value,
-    termos: document.getElementById('termos').checked
+    confirmarSenha: document.getElementById('confirmar-senha').value
   };
   
   // Validações
@@ -197,11 +196,7 @@ async function cadastrarUsuario(event) {
   }
   
   
-  if (!formData.termos) {
-    mostrarErro('Você deve aceitar os termos de uso para continuar.');
-    return;
-  }
-  
+    
   // Desabilita o botão durante o cadastro
   cadastrarButton.disabled = true;
   cadastrarButton.textContent = 'Cadastrando...';

@@ -294,25 +294,102 @@ async function buscarClientePorCpf() {
     esconderErro();
     mostrarLoading();
     
-    const response = await fetch(`${API_BASE_URL}/clientes/${cpf}`);
+    console.log('=== INÍCIO BUSCA CPF ===');
+    console.log('CPF original do input:', cpfInput.value);
+    console.log('CPF limpo (apenas números):', cpf);
+    console.log('URL da requisição:', `${API_BASE_URL}/clientes/${cpf}`);
+    
+    // Teste se API está respondendo
+    try {
+      console.log('Testando conexão com API...');
+      const testResponse = await fetch(`${API_BASE_URL}/clientes`);
+      console.log('API está online? Status:', testResponse.status);
+      
+      if (!testResponse.ok) {
+        throw new Error('API não está respondendo corretamente');
+      }
+      
+      const todosClientes = await testResponse.json();
+      console.log('Todos os clientes na API:', todosClientes);
+      console.log('Procurando CPF:', cpf, 'na lista de clientes');
+      
+      // Normaliza o CPF de busca (remove formatação e converte para string)
+      const cpfNormalizado = String(cpf).replace(/\D/g, '');
+      console.log('CPF normalizado para busca:', cpfNormalizado);
+      
+      // Análise detalhada dos clientes com normalização
+      console.log('=== ANÁLISE DE CLIENTES ===');
+      todosClientes.forEach((cliente, index) => {
+        // Normaliza o CPF do cliente (remove formatação)
+        const cpfClienteNormalizado = String(cliente.cpf).replace(/\D/g, '');
+        
+        console.log(`Cliente ${index + 1}:`, {
+          cpfOriginal: cliente.cpf,
+          cpfNormalizado: cpfClienteNormalizado,
+          tipoCPF: typeof cliente.cpf,
+          nome: cliente.nome,
+          comparacaoNormalizada: cpfClienteNormalizado === cpfNormalizado
+        });
+      });
+      console.log('=== FIM ANÁLISE ===');
+      
+      // Busca usando CPF normalizado
+      const clienteEncontrado = todosClientes.find(c => {
+        const cpfClienteNormalizado = String(c.cpf).replace(/\D/g, '');
+        return cpfClienteNormalizado === cpfNormalizado;
+      });
+      
+      console.log('Cliente encontrado na busca normalizada:', clienteEncontrado);
+      
+      if (!clienteEncontrado) {
+        console.log('CPF não encontrado na base de dados');
+        resultadoDiv.innerHTML = `
+          <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+            <h3> Cliente Não Encontrado</h3>
+            <p><strong>CPF pesquisado:</strong> ${formatarCPF(cpf)}</p>
+            <p><strong>Motivo:</strong> Não há cliente cadastrado com este CPF.</p>
+            <p><strong>CPFs disponíveis:</strong> ${todosClientes.map(c => formatarCPF(c.cpf)).join(', ')}</p>
+            <div style="margin-top: 1.5rem;">
+              <button onclick="window.location.href='cadastro-cliente.html'" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+                + Cadastrar Este Cliente
+              </button>
+              <button onclick="document.getElementById('cpf').focus()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+                Buscar Outro CPF
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      console.log('Cliente encontrado, renderizando...');
+      resultadoDiv.innerHTML = renderizarCliente(clienteEncontrado);
+      
+    } catch (testError) {
+      console.error('Erro no teste da API:', testError);
+      throw testError;
+    }
+    
+    console.log('=== FIM BUSCA CPF ===');
+    return;
     
     if (response.status === 404) {
       resultadoDiv.innerHTML = `
         <div class="cliente-card" style="border-left: 4px solid #f39c12;">
-          <h3>🔍 Cliente Não Encontrado</h3>
+          <h3> Cliente Não Encontrado</h3>
           <p><strong>CPF pesquisado:</strong> ${formatarCPF(cpf)}</p>
           <p><strong>Motivo:</strong> Não há cliente cadastrado com este CPF.</p>
           <p><strong>Solução:</strong> Verifique o CPF digitado ou cadastre este cliente.</p>
           <div style="margin-top: 1.5rem;">
-            <button onclick="irParaCadastro()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
-              ➕ Cadastrar Este Cliente
+            <button onclick="window.location.href='cadastro-cliente.html'" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              + Cadastrar Este Cliente
             </button>
             <button onclick="document.getElementById('cpf').focus()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
-              ✏️ Buscar Outro CPF
+              Buscar Outro CPF
             </button>
           </div>
           <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
-            💡 Dica: Use o botão "Cadastrar Novo Cliente" para adicionar clientes novos.
+            Dica: Use o botão "Cadastrar Novo Cliente" para adicionar clientes novos.
           </p>
         </div>
       `;
@@ -324,6 +401,7 @@ async function buscarClientePorCpf() {
     }
     
     const cliente = await response.json();
+    console.log('Cliente encontrado:', cliente);
     resultadoDiv.innerHTML = renderizarCliente(cliente);
     
   } catch (error) {

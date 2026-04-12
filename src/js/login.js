@@ -221,15 +221,4 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Função para "Esqueci minha senha"
-document.addEventListener('DOMContentLoaded', function() {
-  const forgotPasswordLink = document.querySelector('.forgot-password');
-  
-  if (forgotPasswordLink) {
-    forgotPasswordLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      alert('Funcionalidade de recuperação de senha em desenvolvimento. Entre em contato com o suporte.');
-    });
-  }
-});
 
