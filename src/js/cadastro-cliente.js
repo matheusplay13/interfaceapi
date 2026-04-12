@@ -11,25 +11,19 @@ function formatarCPF(input) {
   input.value = valor;
 }
 
-// Validação de CPF (temporariamente simplificada para teste)
+// Validação de CPF
 function validarCPF(cpf) {
   const cpfLimpo = cpf.replace(/\D/g, '');
   
-  console.log('Validando CPF:', cpf, '-> Limpo:', cpfLimpo);
-  
-  // Verificação básica: apenas 11 dígitos
   if (cpfLimpo.length !== 11) {
-    console.log('CPF inválido: tamanho diferente de 11');
     return false;
   }
   
   // Verifica se todos os dígitos são iguais
   if (/^(\d)\1{10}$/.test(cpfLimpo)) {
-    console.log('CPF inválido: todos os dígitos iguais');
     return false;
   }
   
-  console.log('CPF válido (validação simplificada)!');
   return true;
 }
 
@@ -85,25 +79,18 @@ async function verificarCPFDuplicado(cpf) {
 
 // Validação do formulário
 async function validarFormulario(dados) {
-  console.log('Iniciando validação do formulário com dados:', dados);
   let valido = true;
   
   // Validar CPF
-  console.log('Validando CPF:', dados.cpf);
   if (!validarCPF(dados.cpf)) {
-    console.log('CPF inválido, mostrando erro');
     mostrarErroCampo('cpf', 'CPF inválido');
     valido = false;
   } else {
-    console.log('CPF válido, verificando duplicidade');
     // Verificar duplicidade
     const cpfDuplicado = await verificarCPFDuplicado(dados.cpf);
     if (cpfDuplicado) {
-      console.log('CPF já cadastrado');
       mostrarErroCampo('cpf', 'CPF já cadastrado');
       valido = false;
-    } else {
-      console.log('CPF não está duplicado');
     }
   }
   
@@ -162,8 +149,6 @@ async function cadastrarCliente(event) {
       contato: document.getElementById('contato').value.trim()
     };
     
-    console.log('Dados do cliente:', dados);
-    
     // Validar formulário
     const isValido = await validarFormulario(dados);
     if (!isValido) {
@@ -183,11 +168,8 @@ async function cadastrarCliente(event) {
       body: JSON.stringify(dados)
     });
     
-    console.log('Status da resposta:', response.status);
-    
     if (response.ok) {
       const resultado = await response.json();
-      console.log('Cliente cadastrado:', resultado);
       
       // Mostrar sucesso
       mostrarSucesso('Cliente cadastrado com sucesso!');
@@ -202,7 +184,6 @@ async function cadastrarCliente(event) {
       
     } else {
       const erro = await response.json();
-      console.error('Erro ao cadastrar:', erro);
       
       let mensagemErro = 'Erro ao cadastrar cliente';
       
@@ -222,7 +203,6 @@ async function cadastrarCliente(event) {
     }
     
   } catch (error) {
-    console.error('Erro completo:', error);
     mostrarErroGeral('Erro de conexão. Verifique se a API está online.');
   } finally {
     // Restaurar botão
