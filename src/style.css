@@ -1183,19 +1183,84 @@ pre {
 .btn-cadastrar {
   background: var(--gradient-1);
   color: var(--background);
-  border: 1px solid var(--border);
+  border: none;
   padding: 1rem 2rem;
   border-radius: var(--radius-sm);
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-cadastrar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-cadastrar:active:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn-cadastrar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-cadastrar:hover::before {
+  left: 100%;
+}
+
+.botoes-principais button {
+  background: var(--gradient-1);
+  color: var(--background);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+  position: relative;
+  overflow: hidden;
+  min-width: 200px;
+}
+
+.botoes-principais button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.botoes-principais button:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.botoes-principais button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.botoes-principais button:hover::before {
+  left: 100%;
 }
 
 .btn-cadastrar:disabled {
