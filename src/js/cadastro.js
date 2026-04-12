@@ -90,21 +90,21 @@ async function testarConexaoAPI() {
     
     resultadoDiv.innerHTML = `
       <div class="cliente-card" style="border-left: 4px solid #27ae60;">
-        <h3>✅ Teste de Conexão Bem-Sucedido!</h3>
+        <h3> Teste de Conexão Bem-Sucedido!</h3>
         <p><strong>Status:</strong> ${response.status}</p>
         <p><strong>Clientes encontrados:</strong> ${data.length}</p>
         <p><strong>API respondendo:</strong> Sim</p>
         <p><strong>Servidor:</strong> localhost:3000</p>
         <div style="margin-top: 1.5rem;">
           <button onclick="limparFormulario()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
-            ➕ Cadastrar Novo Cliente
+             Cadastrar Novo Cliente
           </button>
           <button onclick="voltarParaInicio()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
-            🏠 Voltar para Início
+             Voltar para Início
           </button>
         </div>
         <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
-          💡 Ótimo! A API está funcionando. Você pode cadastrar novos clientes normalmente.
+           Ótimo! A API está funcionando. Você pode cadastrar novos clientes normalmente.
         </p>
       </div>
     `;

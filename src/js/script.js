@@ -77,29 +77,29 @@ async function testarConexaoAPI() {
     
     resultadoDiv.innerHTML = `
       <div class="cliente-card" style="border-left: 4px solid #27ae60;">
-        <h3>✅ Teste de Conexão Bem-Sucedido!</h3>
+        <h3> Teste de Conexão Bem-Sucedido!</h3>
         <p><strong>Status:</strong> ${response.status}</p>
         <p><strong>Clientes encontrados:</strong> ${data.length}</p>
         <p><strong>API respondendo:</strong> Sim</p>
         <p><strong>Servidor:</strong> localhost:3000</p>
         <div style="margin-top: 1.5rem;">
           <button onclick="buscarTodosClientes()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
-            👥 Ver Todos os Clientes
+             Ver Todos os Clientes
           </button>
           <button onclick="irParaCadastro()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
-            ➕ Cadastrar Novo Cliente
+             Cadastrar Novo Cliente
           </button>
         </div>
         <details style="margin-top: 1rem;">
           <summary style="cursor: pointer; font-weight: 600; color: #667eea; padding: 0.5rem; border-radius: 8px; transition: background 0.3s ease;">
-            📊 Ver dados brutos da resposta
+             Ver dados brutos da resposta
           </summary>
-          <pre style="background: #f8f9fa; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; border: 1px solid #e1e8ed; margin-top: 0.5rem;">
+          <pre style="background: #3150705d; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; border: 1px solid #e1e8ed; margin-top: 0.5rem;">
 ${JSON.stringify(data, null, 2)}
           </pre>
         </details>
         <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
-          💡 Ótimo! A API está funcionando perfeitamente. Você pode usar todas as funcionalidades do sistema.
+           Ótimo! A API está funcionando perfeitamente. Você pode usar todas as funcionalidades do sistema.
         </p>
       </div>
     `;
@@ -463,6 +463,119 @@ document.getElementById('cpf').addEventListener('input', function(e) {
   e.target.value = value;
 });
 
+// Função para buscar todos os produtos
+async function buscarTodosProdutos() {
+  const resultadoDiv = document.getElementById('resultado');
+  
+  try {
+    esconderErro();
+    mostrarLoading();
+    
+    console.log('Fazendo requisição para produtos:', `${API_BASE_URL}/produtos`);
+    
+    const response = await fetch(`${API_BASE_URL}/produtos`);
+    
+    console.log('Status da resposta produtos:', response.status);
+    console.log('Response OK produtos:', response.ok);
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+    }
+    
+    const produtos = await response.json();
+    console.log('Produtos recebidos:', produtos);
+    resultadoDiv.innerHTML = renderizarTodosProdutos(produtos);
+    
+  } catch (error) {
+    console.error('Erro completo ao buscar todos os produtos:', error);
+    console.error('Tipo do erro produtos:', error.name);
+    console.error('Mensagem do erro produtos:', error.message);
+    
+    if (error.name === 'TypeError' && (error.message.includes('fetch') || error.message.includes('Network'))) {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3>API Offline - Acesso Bloqueado</h3>
+          <p><strong>Erro:</strong> Não foi possível buscar todos os produtos.</p>
+          <p><strong>Motivo:</strong> A API não está online no momento.</p>
+          <p><strong>Solução:</strong> Verifique se o servidor está rodando em localhost:3000</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="testarConexaoAPI()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              Testar Conexão Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Recarregar Página
+            </button>
+          </div>
+          <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+            Enquanto a API estiver offline, não é possível buscar produtos.
+          </p>
+        </div>
+      `;
+    } else if (error.name === 'SyntaxError') {
+      mostrarErro('Erro ao processar resposta da API. Verifique o formato dos dados.');
+    } else {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3>Erro ao Buscar Produtos</h3>
+          <p><strong>Erro:</strong> ${error.message}</p>
+          <p><strong>Motivo:</strong> Ocorreu um erro inesperado ao buscar produtos.</p>
+          <p><strong>Solução:</strong> Tente novamente mais tarde ou verifique se o servidor está rodando corretamente.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="buscarTodosProdutos()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              Tentar Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Recarregar Página
+            </button>
+          </div>
+          <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
+            Se o erro persistir, verifique se o servidor está rodando corretamente.
+          </p>
+        </div>
+      `;
+    }
+  }
+}
+
+// Função para renderizar produto individual
+function renderizarProduto(produto) {
+  return `
+    <div class="cliente-card" style="border-left: 4px solid #8e44ad;">
+      <h3>${produto.nome}</h3>
+      <p><strong>ID:</strong> <span style="color: #8e44ad; font-weight: bold;">${produto.id}</span></p>
+      <p><strong>Valor:</strong> <span style="color: #27ae60; font-weight: bold;">R$ ${parseFloat(produto.valor).toFixed(2)}</span></p>
+      <p><strong>Descrição:</strong> ${produto.descricao}</p>
+    </div>
+  `;
+}
+
+// Função para renderizar todos os produtos
+function renderizarTodosProdutos(produtos) {
+  if (produtos.length === 0) {
+    return `
+      <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+        <h3> Nenhum Produto Encontrado</h3>
+        <p><strong>Motivo:</strong> Não há produtos cadastrados no sistema.</p>
+        <p><strong>Solução:</strong> Cadastre novos produtos usando o botão "Cadastrar Novo Produto".</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="window.location.href='cadastro-produto.html'" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Cadastrar Primeiro Produto
+          </button>
+        </div>
+      </div>
+    `;
+  }
+  
+  return `
+    <div style="margin-bottom: 2rem;">
+      <h2 style="color: #8e44ad; margin-bottom: 1rem; font-size: 1.8rem; font-weight: 700;">
+        <span style="margin-right: 0.5rem;"></span>Produtos Cadastrados (${produtos.length})
+      </h2>
+      ${produtos.map(produto => renderizarProduto(produto)).join('')}
+    </div>
+  `;
+}
+
 // Função para navegar para página de cadastro
 async function irParaCadastro() {
   try {
@@ -489,20 +602,20 @@ async function irParaCadastro() {
     const resultadoDiv = document.getElementById('resultado');
     resultadoDiv.innerHTML = `
       <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
-        <h3>❌ API Offline - Acesso Bloqueado</h3>
+        <h3>API Offline - Acesso Bloqueado</h3>
         <p><strong>Erro:</strong> Não foi possível acessar a página de cadastro.</p>
         <p><strong>Motivo:</strong> A API não está online no momento.</p>
         <p><strong>Solução:</strong> Verifique se o servidor está rodando em localhost:3000</p>
         <div style="margin-top: 1.5rem;">
           <button onclick="testarConexaoAPI()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
-            🔄 Testar Conexão Novamente
+            Testar Conexão Novamente
           </button>
           <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
-            🔄 Recarregar Página
+            Recarregar Página
           </button>
         </div>
         <p style="margin-top: 1rem; color: #7f8c8d; font-style: italic;">
-          💡 Enquanto a API estiver offline, não é possível cadastrar novos clientes.
+          Enquanto a API estiver offline, não é possível cadastrar novos clientes.
         </p>
       </div>
     `;
