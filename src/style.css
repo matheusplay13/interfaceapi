@@ -251,8 +251,8 @@ main {
 }
 
 #btn-testar { 
-  background: var(--surface-glass);
-  color: color #0a0a0f(--text);
+  background: var(--gradient-1);
+  color: var(--background);
   border: 1px solid var(--border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
@@ -260,7 +260,30 @@ main {
 #btn-testar:hover {
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  background: var(--surface-light);
+}
+
+#btn-produto { 
+  background: var(--gradient-1);
+  color: var(--background);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#btn-produto:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+#btn-mostrar-produtos { 
+  background: var(--gradient-1);
+  color: var(--background);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#btn-mostrar-produtos:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 #btn-cpf {
