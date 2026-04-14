@@ -282,6 +282,26 @@ header h1 {
   border-color: var(--border-glow);
 }
 
+#btn-id-produto {
+  background: var(--green-gradient);
+  color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#btn-id-produto:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  border-color: var(--border-glow);
+}
+
 /* ===== BOTÃO DE LOGOUT ===== */
 .btn-logout {
   background: var(--gradient-dark);

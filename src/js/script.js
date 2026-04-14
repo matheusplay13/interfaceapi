@@ -576,6 +576,113 @@ function renderizarTodosProdutos(produtos) {
   `;
 }
 
+// Função para buscar produto por ID
+async function buscarProdutoPorId() {
+  const idInput = document.getElementById('id-produto');
+  const resultadoDiv = document.getElementById('resultado');
+  const id = idInput.value;
+  
+  if (!id || id <= 0) {
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+        <h3> ID Inválido</h3>
+        <p><strong>Erro:</strong> O ID digitado não é válido.</p>
+        <p><strong>Motivo:</strong> O ID deve ser um número positivo.</p>
+        <p><strong>Solução:</strong> Digite um ID válido (ex: 1, 2, 3...)</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="document.getElementById('id-produto').focus()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Corrigir ID
+          </button>
+          <button onclick="document.getElementById('id-produto').value=''; resultadoDiv.innerHTML='';" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            Limpar Campo
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  
+  try {
+    esconderErro();
+    mostrarLoading();
+    
+    console.log('Buscando produto por ID:', id);
+    console.log('URL da requisição:', `${API_BASE_URL}/produtos/${id}`);
+    
+    const response = await fetch(`${API_BASE_URL}/produtos/${id}`);
+    
+    console.log('Status da resposta:', response.status);
+    console.log('Response OK:', response.ok);
+    
+    if (response.status === 404) {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+          <h3> Produto Não Encontrado</h3>
+          <p><strong>ID pesquisado:</strong> ${id}</p>
+          <p><strong>Motivo:</strong> Não há produto cadastrado com este ID.</p>
+          <p><strong>Solução:</strong> Verifique o ID digitado ou cadastre este produto.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="window.location.href='cadastro-produto.html'" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              + Cadastrar Novo Produto
+            </button>
+            <button onclick="document.getElementById('id-produto').focus()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Buscar Outro ID
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+    }
+    
+    const produto = await response.json();
+    console.log('Produto encontrado:', produto);
+    resultadoDiv.innerHTML = renderizarProduto(produto);
+    
+  } catch (error) {
+    console.error('Erro ao buscar produto por ID:', error);
+    
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3> API Offline - Acesso Bloqueado</h3>
+          <p><strong>Erro:</strong> Não foi possível buscar o produto por ID.</p>
+          <p><strong>Motivo:</strong> A API não está online no momento.</p>
+          <p><strong>Solução:</strong> Verifique se o servidor está rodando em localhost:3000</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="testarConexaoAPI()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              Testar Conexão Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Recarregar Página
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+          <h3> Erro ao Buscar Produto</h3>
+          <p><strong>Erro:</strong> ${error.message}</p>
+          <p><strong>Motivo:</strong> Ocorreu um erro inesperado ao buscar o produto.</p>
+          <p><strong>Solução:</strong> Tente novamente mais tarde ou verifique se o servidor está rodando corretamente.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="buscarProdutoPorId()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              Tentar Novamente
+            </button>
+            <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Recarregar Página
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
+}
+
 // Função para navegar para página de cadastro
 async function irParaCadastro() {
   try {
