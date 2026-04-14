@@ -576,6 +576,456 @@ function renderizarTodosProdutos(produtos) {
   `;
 }
 
+// Função para mostrar painel de deleção
+function mostrarPainelDeletar() {
+  const resultadoDiv = document.getElementById('resultado');
+  
+  resultadoDiv.innerHTML = `
+    <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+      <h3>Deletar Registro</h3>
+      <p>Selecione o tipo de registro que deseja deletar:</p>
+      
+      <div style="margin-top: 1.5rem;">
+        <button onclick="mostrarFormularioDeletarCliente()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem; margin-bottom: 0.5rem;">
+          Deletar Cliente
+        </button>
+        <button onclick="mostrarFormularioDeletarUsuario()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem; margin-bottom: 0.5rem;">
+          Deletar Usuário
+        </button>
+        <button onclick="mostrarFormularioDeletarProduto()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-bottom: 0.5rem;">
+          Deletar Produto
+        </button>
+      </div>
+      
+      <div style="margin-top: 1rem;">
+        <button onclick="document.getElementById('resultado').innerHTML='';" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Função para mostrar formulário de deleção de cliente
+function mostrarFormularioDeletarCliente() {
+  const resultadoDiv = document.getElementById('resultado');
+  
+  resultadoDiv.innerHTML = `
+    <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+      <h3>Deletar Cliente</h3>
+      <p>Digite o CPF do cliente que deseja deletar:</p>
+      
+      <div style="margin-top: 1rem;">
+        <input type="text" id="cpf-deletar" placeholder="Ex: 123.456.789-00" maxlength="14" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1rem;">
+        
+        <button onclick="deletarCliente()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+          Deletar Cliente
+        </button>
+        <button onclick="mostrarPainelDeletar()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+          Voltar
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Adicionar máscara de CPF
+  document.getElementById('cpf-deletar').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.length <= 11) {
+      value = value.replace(/(\d{3})(\d)/, '$1.$2')
+                  .replace(/(\d{3})(\d)/, '$1.$2')
+                  .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    
+    e.target.value = value;
+  });
+}
+
+// Função para mostrar formulário de deleção de usuário
+function mostrarFormularioDeletarUsuario() {
+  const resultadoDiv = document.getElementById('resultado');
+  
+  resultadoDiv.innerHTML = `
+    <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+      <h3>Deletar Usuário</h3>
+      <p>Digite o código do usuário que deseja deletar:</p>
+      
+      <div style="margin-top: 1rem;">
+        <input type="text" id="codigo-deletar" placeholder="Ex: 123" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1rem;">
+        
+        <button onclick="deletarUsuario()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+          Deletar Usuário
+        </button>
+        <button onclick="mostrarPainelDeletar()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+          Voltar
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Função para mostrar formulário de deleção de produto
+function mostrarFormularioDeletarProduto() {
+  const resultadoDiv = document.getElementById('resultado');
+  
+  resultadoDiv.innerHTML = `
+    <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+      <h3>Deletar Produto</h3>
+      <p>Digite o ID do produto que deseja deletar:</p>
+      
+      <div style="margin-top: 1rem;">
+        <input type="number" id="id-deletar" placeholder="Ex: 1" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 1rem;">
+        
+        <button onclick="deletarProduto()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+          Deletar Produto
+        </button>
+        <button onclick="mostrarPainelDeletar()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+          Voltar
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Função para deletar cliente
+async function deletarCliente() {
+  const cpfInput = document.getElementById('cpf-deletar');
+  const resultadoDiv = document.getElementById('resultado');
+  const cpf = cpfInput.value.replace(/\D/g, '');
+  
+  if (!cpf || cpf.length !== 11) {
+    mostrarErro('CPF inválido. Digite um CPF válido com 11 dígitos.');
+    return;
+  }
+  
+  if (!confirm(`Tem certeza que deseja deletar o cliente com CPF ${formatarCPF(cpf)}? Esta ação não pode ser desfeita!`)) {
+    return;
+  }
+  
+  try {
+    mostrarLoading();
+    
+    console.log('=== INÍCIO DELETE CLIENTE ===');
+    console.log('CPF para deletar:', cpf);
+    console.log('URL da requisição:', `${API_BASE_URL}/clientes/${cpf}`);
+    
+    // Primeiro, vamos verificar se o cliente existe
+    console.log('Verificando se cliente existe...');
+    const checkResponse = await fetch(`${API_BASE_URL}/clientes`);
+    console.log('Status da busca de todos clientes:', checkResponse.status);
+    
+    if (checkResponse.ok) {
+      const todosClientes = await checkResponse.json();
+      console.log('Todos os clientes:', todosClientes);
+      console.log('Procurando CPF:', cpf, 'na lista de clientes');
+      
+      const clienteEncontrado = todosClientes.find(c => {
+        const cpfClienteNormalizado = String(c.cpf).replace(/\D/g, '');
+        const cpfSearch = String(cpf).replace(/\D/g, '');
+        console.log(`Comparando CPF: cliente="${cpfClienteNormalizado}" vs search="${cpfSearch}"`);
+        return cpfClienteNormalizado === cpfSearch;
+      });
+      
+      console.log('Cliente encontrado para delete:', clienteEncontrado);
+      
+      if (!clienteEncontrado) {
+        resultadoDiv.innerHTML = `
+          <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+            <h3>Cliente Não Encontrado</h3>
+            <p><strong>CPF pesquisado:</strong> ${formatarCPF(cpf)}</p>
+            <p><strong>Motivo:</strong> Não há cliente cadastrado com este CPF.</p>
+            <p><strong>CPFs disponíveis:</strong> ${todosClientes.map(c => formatarCPF(c.cpf)).join(', ')}</p>
+            <div style="margin-top: 1.5rem;">
+              <button onclick="mostrarFormularioDeletarCliente()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+                Tentar Outro CPF
+              </button>
+              <button onclick="mostrarPainelDeletar()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+                Voltar
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/clientes/${cpf}`, {
+      method: 'DELETE'
+    });
+    
+    console.log('Status da resposta DELETE:', response.status);
+    console.log('Response OK DELETE:', response.ok);
+    console.log('Headers da resposta:', response.headers);
+    
+    if (response.status === 404) {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+          <h3>Cliente Não Encontrado</h3>
+          <p><strong>CPF pesquisado:</strong> ${formatarCPF(cpf)}</p>
+          <p><strong>Motivo:</strong> Não há cliente cadastrado com este CPF.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="mostrarFormularioDeletarCliente()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              Tentar Outro CPF
+            </button>
+            <button onclick="mostrarPainelDeletar()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Voltar
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+    
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #27ae60;">
+        <h3>Cliente Deletado com Sucesso!</h3>
+        <p><strong>CPF deletado:</strong> ${formatarCPF(cpf)}</p>
+        <p><strong>Status:</strong> Registro removido permanentemente do sistema.</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="mostrarPainelDeletar()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Deletar Outro Registro
+          </button>
+          <button onclick="document.getElementById('resultado').innerHTML='';" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            Fechar
+          </button>
+        </div>
+      </div>
+    `;
+    
+  } catch (error) {
+    console.error('Erro ao deletar cliente:', error);
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+        <h3>Erro ao Deletar Cliente</h3>
+        <p><strong>Erro:</strong> ${error.message}</p>
+        <p><strong>Motivo:</strong> Ocorreu um erro inesperado ao deletar o cliente.</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="deletarCliente()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Tentar Novamente
+          </button>
+          <button onclick="mostrarPainelDeletar()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            Voltar
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Função para deletar usuário
+async function deletarUsuario() {
+  const codigoInput = document.getElementById('codigo-deletar');
+  const resultadoDiv = document.getElementById('resultado');
+  const codigo = codigoInput.value.trim();
+  
+  if (!codigo) {
+    mostrarErro('Código do usuário é obrigatório.');
+    return;
+  }
+  
+  if (!confirm(`Tem certeza que deseja deletar o usuário com código ${codigo}? Esta ação não pode ser desfeita!`)) {
+    return;
+  }
+  
+  try {
+    mostrarLoading();
+    
+    const response = await fetch(`${API_BASE_URL}/usuarios/${codigo}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.status === 404) {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+          <h3>Usuário Não Encontrado</h3>
+          <p><strong>Código pesquisado:</strong> ${codigo}</p>
+          <p><strong>Motivo:</strong> Não há usuário cadastrado com este código.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="mostrarFormularioDeletarUsuario()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              Tentar Outro Código
+            </button>
+            <button onclick="mostrarPainelDeletar()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Voltar
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+    
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #27ae60;">
+        <h3>Usuário Deletado com Sucesso!</h3>
+        <p><strong>Código deletado:</strong> ${codigo}</p>
+        <p><strong>Status:</strong> Registro removido permanentemente do sistema.</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="mostrarPainelDeletar()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Deletar Outro Registro
+          </button>
+          <button onclick="document.getElementById('resultado').innerHTML='';" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            Fechar
+          </button>
+        </div>
+      </div>
+    `;
+    
+  } catch (error) {
+    console.error('Erro ao deletar usuário:', error);
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+        <h3>Erro ao Deletar Usuário</h3>
+        <p><strong>Erro:</strong> ${error.message}</p>
+        <p><strong>Motivo:</strong> Ocorreu um erro inesperado ao deletar o usuário.</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="deletarUsuario()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Tentar Novamente
+          </button>
+          <button onclick="mostrarPainelDeletar()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            Voltar
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Função para deletar produto
+async function deletarProduto() {
+  const idInput = document.getElementById('id-deletar');
+  const resultadoDiv = document.getElementById('resultado');
+  const id = idInput.value.trim();
+  
+  if (!id) {
+    mostrarErro('ID do produto é obrigatório.');
+    return;
+  }
+  
+  if (!confirm(`Tem certeza que deseja deletar o produto com ID ${id}? Esta ação não pode ser desfeita!`)) {
+    return;
+  }
+  
+  try {
+    mostrarLoading();
+    
+    console.log('=== INÍCIO DELETE PRODUTO ===');
+    console.log('ID para deletar:', id);
+    console.log('URL da requisição:', `${API_BASE_URL}/produtos/${id}`);
+    
+    // Primeiro, vamos verificar se o produto existe
+    console.log('Verificando se produto existe...');
+    const checkResponse = await fetch(`${API_BASE_URL}/produtos`);
+    console.log('Status da busca de todos produtos:', checkResponse.status);
+    
+    if (checkResponse.ok) {
+      const todosProdutos = await checkResponse.json();
+      console.log('Todos os produtos:', todosProdutos);
+      console.log('Procurando ID:', id, 'na lista de produtos');
+      
+      const produtoEncontrado = todosProdutos.find(p => {
+        const produtoId = String(p.id).trim();
+        const searchId = String(id).trim();
+        console.log(`Comparando: produto.id="${produtoId}" vs search="${searchId}"`);
+        return produtoId === searchId;
+      });
+      console.log('Produto encontrado para delete:', produtoEncontrado);
+      
+      if (!produtoEncontrado) {
+        resultadoDiv.innerHTML = `
+          <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+            <h3>Produto Não Encontrado</h3>
+            <p><strong>ID pesquisado:</strong> ${id}</p>
+            <p><strong>Motivo:</strong> Não há produto cadastrado com este ID.</p>
+            <p><strong>IDs disponíveis:</strong> ${todosProdutos.map(p => p.id).join(', ')}</p>
+            <div style="margin-top: 1.5rem;">
+              <button onclick="mostrarFormularioDeletarProduto()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+                Tentar Outro ID
+              </button>
+              <button onclick="mostrarPainelDeletar()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+                Voltar
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/produtos/${id}`, {
+      method: 'DELETE'
+    });
+    
+    console.log('Status da resposta DELETE:', response.status);
+    console.log('Response OK DELETE:', response.ok);
+    console.log('Headers da resposta:', response.headers);
+    
+    if (response.status === 404) {
+      resultadoDiv.innerHTML = `
+        <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+          <h3>Produto Não Encontrado</h3>
+          <p><strong>ID pesquisado:</strong> ${id}</p>
+          <p><strong>Motivo:</strong> Não há produto cadastrado com este ID.</p>
+          <div style="margin-top: 1.5rem;">
+            <button onclick="mostrarFormularioDeletarProduto()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+              Tentar Outro ID
+            </button>
+            <button onclick="mostrarPainelDeletar()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+              Voltar
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+    
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #27ae60;">
+        <h3>Produto Deletado com Sucesso!</h3>
+        <p><strong>ID deletado:</strong> ${id}</p>
+        <p><strong>Status:</strong> Registro removido permanentemente do sistema.</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="mostrarPainelDeletar()" style="background: #27ae60; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Deletar Outro Registro
+          </button>
+          <button onclick="document.getElementById('resultado').innerHTML='';" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            Fechar
+          </button>
+        </div>
+      </div>
+    `;
+    
+  } catch (error) {
+    console.error('Erro ao deletar produto:', error);
+    resultadoDiv.innerHTML = `
+      <div class="cliente-card" style="border-left: 4px solid #e74c3c;">
+        <h3>Erro ao Deletar Produto</h3>
+        <p><strong>Erro:</strong> ${error.message}</p>
+        <p><strong>Motivo:</strong> Ocorreu um erro inesperado ao deletar o produto.</p>
+        <div style="margin-top: 1.5rem;">
+          <button onclick="deletarProduto()" style="background: #e74c3c; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+            Tentar Novamente
+          </button>
+          <button onclick="mostrarPainelDeletar()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+            Voltar
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
 // Função para buscar produto por ID
 async function buscarProdutoPorId() {
   const idInput = document.getElementById('id-produto');
