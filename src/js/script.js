@@ -693,13 +693,14 @@ async function deletarCliente() {
   const cpfInput = document.getElementById('cpf-deletar');
   const resultadoDiv = document.getElementById('resultado');
   const cpf = cpfInput.value.replace(/\D/g, '');
+  const cpfFormatado = formatarCPF(cpf);
   
   if (!cpf || cpf.length !== 11) {
     mostrarErro('CPF inválido. Digite um CPF válido com 11 dígitos.');
     return;
   }
   
-  if (!confirm(`Tem certeza que deseja deletar o cliente com CPF ${formatarCPF(cpf)}? Esta ação não pode ser desfeita!`)) {
+  if (!confirm(`Tem certeza que deseja deletar o cliente com CPF ${cpfFormatado}? Esta ação não pode ser desfeita!`)) {
     return;
   }
   
@@ -708,28 +709,23 @@ async function deletarCliente() {
     
     console.log('=== INÍCIO DELETE CLIENTE ===');
     console.log('CPF para deletar:', cpf);
-    console.log('URL da requisição:', `${API_BASE_URL}/clientes/${cpf}`);
+    console.log('CPF formatado:', cpfFormatado);
+    console.log('URL da requisição:', `${API_BASE_URL}/clientes/${cpfFormatado}`);
     
-    // Primeiro, vamos verificar se o cliente existe
-    console.log('Verificando se cliente existe...');
-    const checkResponse = await fetch(`${API_BASE_URL}/clientes`);
-    console.log('Status da busca de todos clientes:', checkResponse.status);
+    // Tenta deletar diretamente - se o cliente não existir, a API retornará 404
+    const response = await fetch(`${API_BASE_URL}/clientes/${cpfFormatado}`, {
+      method: 'DELETE'
+    });
     
-    if (checkResponse.ok) {
-      const todosClientes = await checkResponse.json();
-      console.log('Todos os clientes:', todosClientes);
-      console.log('Procurando CPF:', cpf, 'na lista de clientes');
-      
-      const clienteEncontrado = todosClientes.find(c => {
-        const cpfClienteNormalizado = String(c.cpf).replace(/\D/g, '');
-        const cpfSearch = String(cpf).replace(/\D/g, '');
-        console.log(`Comparando CPF: cliente="${cpfClienteNormalizado}" vs search="${cpfSearch}"`);
-        return cpfClienteNormalizado === cpfSearch;
-      });
-      
-      console.log('Cliente encontrado para delete:', clienteEncontrado);
-      
-      if (!clienteEncontrado) {
+    console.log('Status da resposta DELETE:', response.status);
+    console.log('Response OK DELETE:', response.ok);
+    console.log('Headers da resposta:', response.headers);
+    
+    if (response.status === 404) {
+      // Se não encontrar, busca todos para mostrar os CPFs disponíveis
+      const checkResponse = await fetch(`${API_BASE_URL}/clientes`);
+      if (checkResponse.ok) {
+        const todosClientes = await checkResponse.json();
         resultadoDiv.innerHTML = `
           <div class="cliente-card" style="border-left: 4px solid #f39c12;">
             <h3>Cliente Não Encontrado</h3>
@@ -746,34 +742,23 @@ async function deletarCliente() {
             </div>
           </div>
         `;
-        return;
-      }
-    }
-    
-    const response = await fetch(`${API_BASE_URL}/clientes/${cpf}`, {
-      method: 'DELETE'
-    });
-    
-    console.log('Status da resposta DELETE:', response.status);
-    console.log('Response OK DELETE:', response.ok);
-    console.log('Headers da resposta:', response.headers);
-    
-    if (response.status === 404) {
-      resultadoDiv.innerHTML = `
-        <div class="cliente-card" style="border-left: 4px solid #f39c12;">
-          <h3>Cliente Não Encontrado</h3>
-          <p><strong>CPF pesquisado:</strong> ${formatarCPF(cpf)}</p>
-          <p><strong>Motivo:</strong> Não há cliente cadastrado com este CPF.</p>
-          <div style="margin-top: 1.5rem;">
-            <button onclick="mostrarFormularioDeletarCliente()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
-              Tentar Outro CPF
-            </button>
-            <button onclick="mostrarPainelDeletar()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
-              Voltar
-            </button>
+      } else {
+        resultadoDiv.innerHTML = `
+          <div class="cliente-card" style="border-left: 4px solid #f39c12;">
+            <h3>Cliente Não Encontrado</h3>
+            <p><strong>CPF pesquisado:</strong> ${formatarCPF(cpf)}</p>
+            <p><strong>Motivo:</strong> Não há cliente cadastrado com este CPF.</p>
+            <div style="margin-top: 1.5rem;">
+              <button onclick="mostrarFormularioDeletarCliente()" style="background: #f39c12; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer; margin-right: 1rem;">
+                Tentar Outro CPF
+              </button>
+              <button onclick="mostrarPainelDeletar()" style="background: #667eea; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 10px; cursor: pointer;">
+                Voltar
+              </button>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
       return;
     }
     
